@@ -1,15 +1,15 @@
 #include "../../include/orderbook/ticket.h"
 
 Ticket::Ticket(
-    float limit,
+    float price,
+    uint16_t shares,
     bool buySell,
-    bool orderType, //true = limit, false = marketorder;
-    std::uint16_t datetime,
-    uint64_t trader_id
-) : limit(limit), 
+    bool marketOrLimit,
+    uint16_t datetime, 
+    Trader* trader) :   
+    limit(price), 
+    shares(shares),
     buySell(buySell), 
-    orderType(orderType), 
-    datetime(datetime), 
-    trader_id(trader_id) {
-    
-}
+    marketOrLimit(marketOrLimit),
+    datetime(datetime),
+    trader_id(trader) {};

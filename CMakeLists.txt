@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
-project(order_book_sim)
+cmake_minimum_required(VERSION 3.16)
+project(OrderBookSim)
+set(CMAKE_CXX_STANDARD)
 
-set(CMAKE_CXX_STANDARD 17)
+add_subdirectory(src)
 
-include_directories(include)
-add_executable(sim main.cpp)
+add_executable(orderBookSim main.cpp)
+target_link_libraries(orderBookSim PRIVATE orderbook trading)
