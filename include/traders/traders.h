@@ -14,21 +14,23 @@
 class Trader {
     protected:
     TraderType traderType;
-    int investment;
+    SimulationContext& simCtx;
+    float investment;
     int shares; 
     float tradingFreq;
     uint64_t trader_id;
     
     public:
-    Trader(int inv, int share, SimulationContext& simCtx); 
+    Trader(float inv, int share, SimulationContext& simCtx); 
     virtual ~Trader() = default;
     virtual void trade(
         Info& info,
         uint16_t time,
-        Ledger& ledger,
-        SimulationContext& simCtx
+        Ledger& ledger
     ) = 0;
-    void editShares(uint16_t sharesAmount);
+    int getShares();
+    float getInvestment();
+    void editShares(int sharesAmount);
     void editInvestment(float investmentAmount);
     void profile(); //stats about the trader
     uint64_t getAddress();

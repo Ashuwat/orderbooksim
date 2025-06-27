@@ -1,19 +1,19 @@
-#include "../traders.h"
 #pragma once
+
+#include "../traders.h"
+
 class NoisyTrader : public Trader {
     private:
     Ticket ticketGeneration(
         Info& info,
         uint16_t time,
-        Ledger& ledger,
-        SimulationContext& simCtx
+        Ledger& ledger
     );
     public:
     void trade(
         Info& info,
         uint16_t time,
-        Ledger& ledger,
-        SimulationContext& simCtx
+        Ledger& ledger
     ) override;
-    NoisyTrader(int inv, int share, SimulationContext& simCt);
+    NoisyTrader(float inv, int share, SimulationContext& simCt);
 };

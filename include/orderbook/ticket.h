@@ -1,5 +1,7 @@
-#include <cstdint>
 #pragma once
+
+#include <cstdint>
+#include <memory>
 
 class Trader;
 
@@ -17,20 +19,21 @@ class Ticket {
             uint16_t shares,
             bool buySell,
             bool marketOrLimit,
-            uint16_t datetime, 
+            int datetime, 
             Trader* trader);
         float getLimit() const;
-        uint16_t getDatetime() const;
-        void editShares(uint16_t shares);
+        int getDatetime() const;
+        void editShares(int shares);
         uint16_t getShares() const;
         bool getTypeOfBuy() const;
         Trader* getTraderId() const;
         bool getTypeOfOrder() const; // market is true, limit is false
+        bool isTicketValid() const;
 };
 
 
 struct BidTicketComparator {
-    bool operator()(const Ticket* a, const Ticket* b) const {
+    bool operator()(const std::unique_ptr<Ticket>& a, const std::unique_ptr<Ticket>& b) const {
         if (a->getLimit() == b->getLimit()) {
             return a->getDatetime() > b->getDatetime(); // earlier = higher priority
         }
@@ -39,10 +42,10 @@ struct BidTicketComparator {
 };
 
 struct AskTicketComparator {
-    bool operator()(const Ticket* a, const Ticket* b) const {
+    bool operator()(const std::unique_ptr<Ticket>& a, const std::unique_ptr<Ticket>& b) const {
         if (a->getLimit() == b->getLimit()) {
             return a->getDatetime() > b->getDatetime(); // earlier = higher priority
         }
-        return a->getLimit() > b->getLimit(); // higher price = higher priority
+        return a->getLimit() > b->getLimit(); // lower price = higher priority
     }
 };

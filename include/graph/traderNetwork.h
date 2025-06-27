@@ -17,7 +17,7 @@ class TraderNetwork{
 
     public:
     TraderNetwork();
-    void addTrader(Trader*);
+    void addTrader(Trader* trader);
     void generateGraph();
     void seedInformation(std::vector<uint64_t>& sources);
     void propagateInfoICM(float& transmissionRate);

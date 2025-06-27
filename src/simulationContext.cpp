@@ -1,9 +1,9 @@
 #include "../include/simulationContext.h"
 #include <random>
+#include <iostream>
 
-SimulationContext::SimulationContext() {
-    std::mt19937_64 rng {};
-    std::normal_distribution<float> norm_dist {};
-    std::bernoulli_distribution coin_flip {};
-    std::uniform_int_distribution<int> uniform_dist {};
-}
+SimulationContext::SimulationContext(int seed) : 
+      rng(seed),
+      norm_dist(0.0f, 1.0f),
+      coin_flip(0.5),
+      uniform_dist(0, 100) {}

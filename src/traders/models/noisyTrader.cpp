@@ -1,7 +1,10 @@
 #include "../../../include/traders/models/noisyTrader.h"
+#include <algorithm>
 #include <cstdint>
+#include <memory>
+#include <random>
 
-NoisyTrader::NoisyTrader(int inv, int share, SimulationContext& simCtx) 
+NoisyTrader::NoisyTrader(float inv, int share, SimulationContext& simCtx) 
     : Trader(inv, share, simCtx) {
     NoisyTrader::traderType = TraderType::Noisy; 
 };
@@ -9,21 +12,22 @@ NoisyTrader::NoisyTrader(int inv, int share, SimulationContext& simCtx)
 Ticket NoisyTrader::ticketGeneration(
     Info& info,
     uint16_t time,
-    Ledger& ledger,
-    SimulationContext& simCtx
+    Ledger& ledger
 ) {
-    bool buyOrSell {simCtx.coin_flip(simCtx.rng)};
-    float price {simCtx.norm_dist(simCtx.rng)};
-    int quantity {simCtx.uniform_dist(simCtx.rng)};
+    bool buyOrSell {simCtx.coin_flip(simCtx.rng)}; // buy means true, sell means false
+    float price {(simCtx.norm_dist(simCtx.rng)) / 10 + ledger.getlatestTrade()};
+    price = std::max(0.01f, price);
+    int quantity {simCtx.uniform_dist(simCtx.rng) % 10 + 1};
+    bool marketLimit {std::bernoulli_distribution(0.7)(simCtx.rng)};
     float afford {quantity * price};
-
+   
     if (buyOrSell) { // buy
         if (afford <= investment) {
             return Ticket(
                 price, 
                 quantity,
                 buyOrSell,
-                false, //false means limit, true means marketOrder
+                marketLimit, //false means limit, true means marketOrder
                 time,
                 this 
             );
@@ -34,7 +38,7 @@ Ticket NoisyTrader::ticketGeneration(
                 price,
                 quantity,
                 buyOrSell,
-                false,
+                marketLimit,
                 time,
                 this 
             );
@@ -46,14 +50,17 @@ Ticket NoisyTrader::ticketGeneration(
 void NoisyTrader::trade(
     Info& info,
     uint16_t time,
-    Ledger& ledger,
-    SimulationContext& simCtx
+    Ledger& ledger
 ) {
-    Ticket someTicket = ticketGeneration(info,time,ledger,simCtx);
-    if (someTicket.getTypeOfBuy()) {
-        ledger.buy(&someTicket);
-    } else {
-        ledger.sell(&someTicket);
+    std::unique_ptr<Ticket> someTicket = std::make_unique<Ticket>(ticketGeneration(info,time,ledger));
+    if (someTicket->isTicketValid() == false) {
+        ledger.hold(std::move(someTicket));
+        return;
     }
-    
+
+    if (someTicket->getTypeOfBuy()) {
+        ledger.buy(std::move(someTicket));
+    } else {
+        ledger.sell(std::move(someTicket));
+    }    
 }

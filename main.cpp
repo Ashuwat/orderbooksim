@@ -1,6 +1,10 @@
-#include "src/traders/models/noisyTrader.cpp"
-#include "src/orderbook/ledger.cpp"
-#include "src/traders/traders.cpp"
+#include "include/traders/models/noisyTrader.h"
+#include "include/orderbook/ledger.h"
+#include "include/traders/traders.h"
+#include "include/orderbook/aggregationLog.h"
+#include <memory>
+#include <random>
+#include <string>
 
 Info generateInfo(int i) {
     if (i == 25) {
@@ -10,30 +14,59 @@ Info generateInfo(int i) {
     } 
 }
 
-int main() {
+int main(int argc, char*argv[]) {
+    // for params
+    unsigned int seed = std::random_device{}(); // default: random
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if ((arg == "--seed") && i + 1 < argc) {
+            seed = std::stoul(argv[++i]);
+        }
+    }
+
     // parameters
-    const int numNoisy = 10000;
+    const int NUM_NOISY = 100000;
     // const int numRisk = 10000;
     // const int numEvent = 10000;
     // const int numInstitute = 10000;
-    const int SIMULATION_EPOCHS {50};
+    const int AVERAGE_VOLUME = 100;
+    const int SIMULATION_EPOCHS {10};
+    int internalCount = 0;
+    int count = 0;
+
+    AggregationLog aggLog = AggregationLog(SIMULATION_EPOCHS);
     Ledger ledger {Ledger()};
-    // SimulationContext simCtx {SimulationContext()};
-
-    // std::array<std::unique_ptr<NoisyTrader>, numNoisy> noisyTraders;
+    ledger.setStartingPrice(20);
+    SimulationContext simCtx {SimulationContext(seed)};
     
-    // for (int i = 0; i < 10000; i++) {
-    //     noisyTraders[i] = std::make_unique<NoisyTrader>(100, 100, simCtx);
-    // };
 
-    // for (int i = 0; i < SIMULATION_EPOCHS; i++) {
-    //     int randomTraderIndex {simCtx.uniform_dist(simCtx.rng)};
-    //     randomTraderIndex = randomTraderIndex % numNoisy;
-    //     Info info {generateInfo(i)};
-    //     NoisyTrader& randomTrader {*noisyTraders[randomTraderIndex]};
-    //     randomTrader.trade(info, i, ledger, simCtx);
-    // };
- 
+    std::array<std::unique_ptr<NoisyTrader>, NUM_NOISY> noisyTraders;
+    
+    for (int i = 0; i < NUM_NOISY; ++i) {
+       noisyTraders[i] = std::make_unique<NoisyTrader>(1000.0, 100, simCtx);
+    };
+
+    for (int i = 0; i < SIMULATION_EPOCHS; ++i) {
+        // int randomVolumeGenerator {abs(simCtx.uniform_dist(simCtx.rng) % AVERAGE_VOLUME)};
+        int randomVolumeGenerator = 10;
+        for (int j = 0; j < randomVolumeGenerator; ++j) {
+            int randomTraderIndex {simCtx.uniform_dist(simCtx.rng) % NUM_NOISY};
+            Info info {generateInfo(i)};
+            NoisyTrader& randomTrader {*noisyTraders[randomTraderIndex]};
+            randomTrader.trade(info, internalCount, ledger);
+            float latestTrade = ledger.getlatestTrade();
+            ++internalCount;
+        }
+        OHCVL hello = ledger.returnOHCVL(count);
+        aggLog.add(hello); 
+        count += randomVolumeGenerator;
+   };
+
+    std::cout << &simCtx.rng;
+
+    ledger.retrieveAllData();
+    aggLog.retrieveAllData();
     // has to have a struct to make the node list. 
     // randomly select a trader in the list.
     // there will be a list of randomly assigned traders 
