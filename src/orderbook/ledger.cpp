@@ -88,44 +88,6 @@ void Ledger::removeOpposingTicket(Ticket* ticket) { //buy is true, ask is false
     }
 }
 
-// void Ledger::updateTraders(Ticket* initTicket, Ticket* topTicket) {
-//     float amountTransacted;
-//     uint16_t sharesTransacted;
-//     Trader* initTrader = initTicket->getTraderId(); 
-//     Trader* opposingTrader = topTicket->getTraderId();
-//     if (initTicket->getTypeOfBuy()) {
-//         if (initTicket->getShares() < topTicket->getShares()) {
-//             amountTransacted = initTicket->getShares() * topTicket->getLimit(); 
-//             sharesTransacted = initTicket->getShares();
-//             logTrade(topTicket->getLimit(), initTicket->getShares(), initTicket->getDatetime());
-//         } else {
-//             amountTransacted = topTicket->getShares() * topTicket->getLimit();
-//             sharesTransacted = topTicket->getShares();
-//             logTrade(topTicket->getLimit(), topTicket->getShares(), initTicket->getDatetime());
-//         }
-
-//         initTrader->editInvestment(amountTransacted * -1);
-//         initTrader->editShares(sharesTransacted);
-//         opposingTrader->editInvestment(amountTransacted);
-//         opposingTrader->editShares(sharesTransacted * -1);
-//     } else {
-//         if (initTicket -> getShares() < topTicket -> getShares()) {
-//             sharesTransacted = initTicket->getShares();
-//             amountTransacted = initTicket->getShares() * topTicket->getLimit(); 
-//             logTrade(topTicket->getLimit(), initTicket->getShares(), initTicket->getDatetime());
-//         } else {
-//             sharesTransacted = topTicket->getShares();
-//             amountTransacted = topTicket->getShares() * topTicket->getLimit();
-//             logTrade(topTicket->getLimit(), topTicket->getShares(), topTicket->getDatetime());
-//         }
-//         initTrader->editShares(sharesTransacted * -1);
-//         initTrader->editInvestment(amountTransacted);
-//         opposingTrader->editShares(sharesTransacted);
-//         opposingTrader->editInvestment(amountTransacted * -1);
-//     }
-// }
-
-
 bool Ledger::updateTraders(Ticket* initTicket, Ticket* topTicket) {
     Trader* buyer = initTicket->getTypeOfBuy() ? initTicket->getTraderId() : topTicket->getTraderId();
     Trader* seller = initTicket->getTypeOfBuy() ? topTicket->getTraderId() : initTicket->getTraderId();
