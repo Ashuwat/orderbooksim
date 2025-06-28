@@ -11,7 +11,7 @@ Info generateInfo(int i) {
         return Info();
     } else {
         return Info();
-    } 
+    }
 }
 
 int main(int argc, char*argv[]) {
@@ -31,7 +31,7 @@ int main(int argc, char*argv[]) {
     // const int numEvent = 10000;
     // const int numInstitute = 10000;
     const int AVERAGE_VOLUME = 100;
-    const int SIMULATION_EPOCHS {10};
+    const int SIMULATION_EPOCHS {100};
     int internalCount = 0;
     int count = 0;
 
@@ -48,8 +48,7 @@ int main(int argc, char*argv[]) {
     };
 
     for (int i = 0; i < SIMULATION_EPOCHS; ++i) {
-        // int randomVolumeGenerator {abs(simCtx.uniform_dist(simCtx.rng) % AVERAGE_VOLUME)};
-        int randomVolumeGenerator = 10;
+        int randomVolumeGenerator {abs(simCtx.uniform_dist(simCtx.rng) % AVERAGE_VOLUME)};
         for (int j = 0; j < randomVolumeGenerator; ++j) {
             int randomTraderIndex {simCtx.uniform_dist(simCtx.rng) % NUM_NOISY};
             Info info {generateInfo(i)};
@@ -58,12 +57,10 @@ int main(int argc, char*argv[]) {
             float latestTrade = ledger.getlatestTrade();
             ++internalCount;
         }
-        OHCVL hello = ledger.returnOHCVL(count);
+        OHCVL hello = ledger.returnOHCVL(count, count + randomVolumeGenerator);
         aggLog.add(hello); 
         count += randomVolumeGenerator;
-   };
-
-    std::cout << &simCtx.rng;
+   }; 
 
     ledger.retrieveAllData();
     aggLog.retrieveAllData();

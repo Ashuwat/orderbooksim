@@ -28,7 +28,7 @@ class Ledger {
         bool limitOrder(Ticket* ticket);
         bool checkLedger(Ticket* ticket);
     public: 
-        OHCVL returnOHCVL(int ticketEpochs);
+        OHCVL returnOHCVL(int ticketEpochs, int count);
         void setStartingPrice(float startingPrice);
         void retrieveAllData();
         float getlatestTrade() const;

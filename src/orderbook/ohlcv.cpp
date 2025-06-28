@@ -3,6 +3,6 @@
 OHCVL::OHCVL(
     float o,
     float h,
-    float c,
     float l,
-    int v) : open(o), high(h), close(c), low(l), volume(v) {}
+    float c,
+    int v) : open(o), high(h), low(l), close(c), volume(v) {}

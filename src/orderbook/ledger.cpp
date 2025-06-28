@@ -11,7 +11,6 @@ Ledger::Ledger() : bid(), ask() {};
 
 void Ledger::logTrade(float price, uint16_t quantity, int timestamp) {
     lastTradedPrice = price;
-    std::cout << timestamp << "\n";
     if (log.empty()) {
         log.emplace_back(price, quantity, timestamp);
     } else if (log.back().timestamp == timestamp) {
@@ -22,29 +21,27 @@ void Ledger::logTrade(float price, uint16_t quantity, int timestamp) {
     }
 };
 
-OHCVL Ledger::returnOHCVL(int ticketEpochs) {
+OHCVL Ledger::returnOHCVL(int startIdx, int endIdx) {
     int size = static_cast<int>(log.size());
-    if (size == 0) {
-        std::cout << "no trades in ohlcv log";
-        return OHCVL(startingPrice, startingPrice, startingPrice, startingPrice, 0);
-    } else if (log.back().timestamp == ticketEpochs) {
-        return OHCVL(log.back().price, log.back().price, log.back().price, log.back().price, 0);
-    }
 
-    auto reverse = log.rbegin();
-    float open = (reverse + ticketEpochs)->price;
-    float high = reverse->price; 
-    float low = reverse->price;
-    float close = log.back().price;
+    if (startIdx >= size) return OHCVL(startingPrice, startingPrice, startingPrice, startingPrice, 0);
+    endIdx = std::min(endIdx, size);
+
+    float open = log[startIdx].price;
+    float high = log[startIdx].price;
+    float low  = log[startIdx].price;
+    float close = log[endIdx - 1].price;
     int volume = 0;
-    for (auto itr = reverse; itr->timestamp != reverse->timestamp; ++itr) {
-        if (itr->price > high) {high = itr->price;} 
-        else if (itr->price < low) {low = itr->price;}
-        volume += itr->quantity;
+
+    for (int i = startIdx; i < endIdx; ++i) {
+        if (log[i].price > high) high = log[i].price;
+        if (log[i].price < low)  low = log[i].price;
+        volume += log[i].quantity;
     }
-    
-    return (OHCVL(open, high, low, close, volume));
+    std::cout << open << "," << high << "," << low << "," << close << "," << volume << "\n";
+    return OHCVL(open, high, low, close, volume);
 }
+
 
 void Ledger::setStartingPrice(float price) {
     startingPrice = price;
@@ -140,7 +137,6 @@ bool Ledger::updateTraders(Ticket* initTicket, Ticket* topTicket) {
     float amountTransacted = sharesTransacted * topTicket->getLimit();
 
     if (buyer->getInvestment() < amountTransacted || seller->getShares() < sharesTransacted) {
-        std::cerr << "Invalid transaction - " << topTicket->getTraderId() << '\n';
         if (!log.empty()) {
             logTrade(log.back().price, 0, initTicket->getDatetime());
         } else {
@@ -160,7 +156,6 @@ bool Ledger::updateTraders(Ticket* initTicket, Ticket* topTicket) {
 }
 
 bool Ledger::marketOrder(Ticket* ticket) {
-    std::cout << "market\n";
     Ticket* topTicket = ticket->getTypeOfBuy() ? ask.getLowestAsk() : bid.getHighestBid();
     if (!topTicket) {
         if (!log.empty()) {
@@ -196,7 +191,6 @@ bool Ledger::marketOrder(Ticket* ticket) {
 }
 
 bool Ledger::limitOrder(Ticket* ticket) {
-    std::cout << "limit\n"; 
     Ticket* topTicket = ticket->getTypeOfBuy() ? ask.getLowestAsk() : bid.getHighestBid();
     if (!topTicket) {
         if (!log.empty()) {
