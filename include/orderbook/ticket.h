@@ -13,6 +13,7 @@ class Ticket {
         bool marketOrLimit;
         int datetime;
         Trader* trader_id;
+
     public:
        Ticket(
             float price,

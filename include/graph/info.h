@@ -1,4 +1,4 @@
-class Info {
-    private:
-    public:
+struct Info {
+    float idealPrice;
+    float confidence;
 };

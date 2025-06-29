@@ -1,3 +1,4 @@
+#include "../../include/latency/latency.h"
 #include "../../include/orderbook/ledger.h"
 #include "../../include/traders/traders.h"
 #include "../../include/orderbook/tradeRecord.h"
@@ -7,7 +8,7 @@
 #include <vector>
 #include <utility>
 
-Ledger::Ledger() : bid(), ask() {};
+Ledger::Ledger() : bid(), ask(), latencyObj() {};
 
 void Ledger::logTrade(float price, uint16_t quantity, int timestamp) {
     lastTradedPrice = price;
@@ -38,7 +39,7 @@ OHCVL Ledger::returnOHCVL(int startIdx, int endIdx) {
         if (log[i].price < low)  low = log[i].price;
         volume += log[i].quantity;
     }
-    std::cout << open << "," << high << "," << low << "," << close << "," << volume << "\n";
+    // std::cout << open << "," << high << "," << low << "," << close << "," << volume << "\n";
     return OHCVL(open, high, low, close, volume);
 }
 
@@ -47,9 +48,10 @@ void Ledger::setStartingPrice(float price) {
     startingPrice = price;
 }; 
 
-float Ledger::getlatestTrade() const {
+float Ledger::getlatestTrade(int latency = 0) const {
     if (log.empty()) {return startingPrice;}
-    return log.back().price;
+    if (log.size() < latency) {return startingPrice;}
+    return log[log.size() - latency].price;
 }
 
 void Ledger::retrieveAllData() {
@@ -60,23 +62,37 @@ void Ledger::retrieveAllData() {
     }
 };
 
-void Ledger::hold(std::unique_ptr<Ticket> ticket) {
+void Ledger::trade(Ticket ticket) { 
+    latencyObj.addTicket(ticket);
+}
+
+void Ledger::runEngine(int time) {
+    Ticket someTicket {latencyObj.retrieveArrivals(time)};
+    std::cout << time << '\n';
+    if (!someTicket.isTicketValid()) { std::cout << "h\n"; hold(someTicket); return;}
+    if (someTicket.getTypeOfBuy()) {std::cout << "b\n"; buy(someTicket); return;}
+    else std::cout << "s\n"; sell(someTicket); return;
+}
+
+void Ledger::hold(Ticket ticket) { 
     if (log.empty()) {
-        logTrade(startingPrice, 0, ticket->getDatetime());
+        logTrade(startingPrice, 0, ticket.getDatetime());
     } else {
-        logTrade(log.back().price, 0, ticket->getDatetime());
+        logTrade(log.back().price, 0, ticket.getDatetime());
     }
 }
 
-void Ledger::buy(std::unique_ptr<Ticket> ticket) {
-    if (checkLedger(ticket.get())) {
-       bid.add(std::move(ticket)); 
+void Ledger::buy(Ticket ticket) {
+    if (checkLedger(&ticket)) {
+       std::unique_ptr<Ticket> tickUniq = std::make_unique<Ticket>(ticket);
+       bid.add(std::move(tickUniq)); 
     }
 };
 
-void Ledger::sell(std::unique_ptr<Ticket> ticket) {
-    if (checkLedger(ticket.get())) {
-        ask.add(std::move(ticket));
+void Ledger::sell(Ticket ticket) {
+    if (checkLedger(&ticket)) {
+        std::unique_ptr<Ticket> tickUniq = std::make_unique<Ticket>(ticket);
+        ask.add(std::move(tickUniq));
     }
 };
 

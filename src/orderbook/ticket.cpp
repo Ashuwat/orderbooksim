@@ -32,6 +32,6 @@ Trader* Ticket::getTraderId() const {return trader_id;};
 bool Ticket::getTypeOfOrder() const {return marketOrLimit;};
 
 bool Ticket::isTicketValid() const {
- if (trader_id == 0 && datetime == 0 ) {return false;}
+ if (trader_id == 0) {return false;}
  else return true;   
 }

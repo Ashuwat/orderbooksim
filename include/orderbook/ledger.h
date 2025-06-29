@@ -9,11 +9,13 @@
 #include "ticket.h"
 #include "tradeRecord.h"
 #include "ohlcv.h"
+#include "../latency/latency.h"
 
 class Ledger {
     private: 
         Ask ask;
         Bid bid; 
+        Latency latencyObj;
         float lastTradedPrice = startingPrice;
         std::vector<TradeRecord> log = {}; 
         float startingPrice;
@@ -27,13 +29,15 @@ class Ledger {
         bool marketOrder(Ticket* ticket);
         bool limitOrder(Ticket* ticket);
         bool checkLedger(Ticket* ticket);
-    public: 
+        void buy(Ticket ticket);
+        void sell(Ticket ticket);
+        void hold(Ticket ticket);
+        public: 
         OHCVL returnOHCVL(int ticketEpochs, int count);
         void setStartingPrice(float startingPrice);
         void retrieveAllData();
-        float getlatestTrade() const;
-        void buy(std::unique_ptr<Ticket> ticket);
-        void sell(std::unique_ptr<Ticket> ticket);
-        void hold(std::unique_ptr<Ticket> ticket);
+        float getlatestTrade(int latency) const;
+        void runEngine(int time);
+        void trade(Ticket ticket);
         Ledger();
 };

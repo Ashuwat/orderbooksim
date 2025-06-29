@@ -16,7 +16,7 @@ Info generateInfo(int i) {
 
 int main(int argc, char*argv[]) {
     // for params
-    unsigned int seed = std::random_device{}(); // default: random
+    unsigned int seed = std::random_device{}(); 
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -26,12 +26,11 @@ int main(int argc, char*argv[]) {
     }
 
     // parameters
-    const int NUM_NOISY = 100000;
+    const int NUM_NOISY {10000};
     // const int numRisk = 10000;
     // const int numEvent = 10000;
     // const int numInstitute = 10000;
-    const int AVERAGE_VOLUME = 100;
-    const int SIMULATION_EPOCHS {100};
+    const int SIMULATION_EPOCHS {10};
     int internalCount = 0;
     int count = 0;
 
@@ -44,23 +43,34 @@ int main(int argc, char*argv[]) {
     std::array<std::unique_ptr<NoisyTrader>, NUM_NOISY> noisyTraders;
     
     for (int i = 0; i < NUM_NOISY; ++i) {
-       noisyTraders[i] = std::make_unique<NoisyTrader>(1000.0, 100, simCtx);
+       noisyTraders[i] = std::make_unique<NoisyTrader>(10000.0, 1000, simCtx);
     };
 
+    std::cout << "hello\n";
+
     for (int i = 0; i < SIMULATION_EPOCHS; ++i) {
-        int randomVolumeGenerator {abs(simCtx.uniform_dist(simCtx.rng) % AVERAGE_VOLUME)};
+        int randomVolumeGenerator = 100;
+        std::cout << "here\n";
         for (int j = 0; j < randomVolumeGenerator; ++j) {
             int randomTraderIndex {simCtx.uniform_dist(simCtx.rng) % NUM_NOISY};
             Info info {generateInfo(i)};
+            std::cout << "what about here\n";
             NoisyTrader& randomTrader {*noisyTraders[randomTraderIndex]};
+
+            // NoisyTraders trade on latency
+            // HFTTraders trade basically on very very very low latency (last trade or second to last trade) & have some distribution
+            std::cout << "what ab\n";  
             randomTrader.trade(info, internalCount, ledger);
-            float latestTrade = ledger.getlatestTrade();
             ++internalCount;
+            std::cout << ">???\n";
+            ledger.runEngine(internalCount);
         }
+        std::cout << "yo\n";
         OHCVL hello = ledger.returnOHCVL(count, count + randomVolumeGenerator);
         aggLog.add(hello); 
         count += randomVolumeGenerator;
    }; 
+
 
     ledger.retrieveAllData();
     aggLog.retrieveAllData();
