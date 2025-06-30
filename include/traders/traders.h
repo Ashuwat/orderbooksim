@@ -24,7 +24,6 @@ class Trader {
     Trader(float inv, int share, SimulationContext& simCtx); 
     virtual ~Trader() = default;
     virtual void trade(
-        Info& info,
         uint16_t time,
         Ledger& ledger
     ) = 0;

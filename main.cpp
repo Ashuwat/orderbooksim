@@ -6,14 +6,6 @@
 #include <random>
 #include <string>
 
-Info generateInfo(int i) {
-    if (i == 25) {
-        return Info();
-    } else {
-        return Info();
-    }
-}
-
 int main(int argc, char*argv[]) {
     // for params
     unsigned int seed = std::random_device{}(); 
@@ -25,18 +17,18 @@ int main(int argc, char*argv[]) {
         }
     }
 
+
     // parameters
-    const int NUM_NOISY {10000};
+    const long NUM_NOISY = 100000;
     // const int numRisk = 10000;
     // const int numEvent = 10000;
     // const int numInstitute = 10000;
-    const int SIMULATION_EPOCHS {10};
+    const long SIMULATION_EPOCHS = 1000000;
     int internalCount = 0;
     int count = 0;
 
     AggregationLog aggLog = AggregationLog(SIMULATION_EPOCHS);
-    Ledger ledger {Ledger()};
-    ledger.setStartingPrice(20);
+    Ledger ledger {Ledger(20, 200)};
     SimulationContext simCtx {SimulationContext(seed)};
     
 
@@ -46,26 +38,24 @@ int main(int argc, char*argv[]) {
        noisyTraders[i] = std::make_unique<NoisyTrader>(10000.0, 1000, simCtx);
     };
 
-    std::cout << "hello\n";
 
     for (int i = 0; i < SIMULATION_EPOCHS; ++i) {
         int randomVolumeGenerator = 100;
-        std::cout << "here\n";
         for (int j = 0; j < randomVolumeGenerator; ++j) {
-            int randomTraderIndex {simCtx.uniform_dist(simCtx.rng) % NUM_NOISY};
-            Info info {generateInfo(i)};
-            std::cout << "what about here\n";
-            NoisyTrader& randomTrader {*noisyTraders[randomTraderIndex]};
-
-            // NoisyTraders trade on latency
-            // HFTTraders trade basically on very very very low latency (last trade or second to last trade) & have some distribution
-            std::cout << "what ab\n";  
-            randomTrader.trade(info, internalCount, ledger);
+            bool randomChance {simCtx.uniform_dist(simCtx.rng) % 100 > 90};
+            // std::cout << randomChance << '\n';
+            if (randomChance) {
+                int randomTraderIndex {simCtx.uniform_dist(simCtx.rng) % NUM_NOISY};
+                NoisyTrader& randomTrader {*noisyTraders[randomTraderIndex]};
+    
+                // NoisyTraders trade on latency
+                // HFTTraders trade basically on very very very low latency (last trade or second to last trade) & have some distribution
+    
+                randomTrader.trade(internalCount, ledger);
+            }
             ++internalCount;
-            std::cout << ">???\n";
             ledger.runEngine(internalCount);
         }
-        std::cout << "yo\n";
         OHCVL hello = ledger.returnOHCVL(count, count + randomVolumeGenerator);
         aggLog.add(hello); 
         count += randomVolumeGenerator;

@@ -13,13 +13,16 @@ struct CompareLatencyToTrade {
     }
 };
 
+
+
 class Latency {
     private:
-        int latencyTrade {30};
+        int latencyTrade;
         std::priority_queue<LatentTicket, std::vector<LatentTicket>, CompareLatencyToTrade> latencyToTrade;
      
     public:
         Latency();
+        void setLatency(int number);
         void addTicket(const Ticket& ticket);
         Ticket retrieveArrivals(int time);
                 

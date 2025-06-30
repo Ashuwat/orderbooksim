@@ -8,7 +8,9 @@
 #include <vector>
 #include <utility>
 
-Ledger::Ledger() : bid(), ask(), latencyObj() {};
+Ledger::Ledger(int startingPrice, int latency) : bid(), ask(), latencyObj(), startingPrice(startingPrice) {
+    latencyObj.setLatency(latency);
+};
 
 void Ledger::logTrade(float price, uint16_t quantity, int timestamp) {
     lastTradedPrice = price;
@@ -48,10 +50,12 @@ void Ledger::setStartingPrice(float price) {
     startingPrice = price;
 }; 
 
-float Ledger::getlatestTrade(int latency = 0) const {
+float Ledger::getlatestTrade(int latency = 0, int polling = 1) const {
     if (log.empty()) {return startingPrice;}
-    if (log.size() < latency) {return startingPrice;}
-    return log[log.size() - latency].price;
+    if (log.size() <= latency) {return startingPrice;} 
+    int lastIndex = log.size() - latency - 1;
+    int actualIndex = (lastIndex / polling) * polling;
+    return log[actualIndex].price;
 }
 
 void Ledger::retrieveAllData() {
@@ -68,10 +72,9 @@ void Ledger::trade(Ticket ticket) {
 
 void Ledger::runEngine(int time) {
     Ticket someTicket {latencyObj.retrieveArrivals(time)};
-    std::cout << time << '\n';
-    if (!someTicket.isTicketValid()) { std::cout << "h\n"; hold(someTicket); return;}
-    if (someTicket.getTypeOfBuy()) {std::cout << "b\n"; buy(someTicket); return;}
-    else std::cout << "s\n"; sell(someTicket); return;
+    if (!someTicket.isTicketValid()) {hold(someTicket); return;}
+    if (someTicket.getTypeOfBuy()) {buy(someTicket); return;}
+    else sell(someTicket); return;
 }
 
 void Ledger::hold(Ticket ticket) { 

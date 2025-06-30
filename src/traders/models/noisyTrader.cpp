@@ -9,18 +9,17 @@ NoisyTrader::NoisyTrader(float inv, int share, SimulationContext& simCtx)
 };
 
 Ticket NoisyTrader::ticketGeneration(
-    Info& info,
     uint16_t time,
     Ledger& ledger
 ) {
     bool buyOrSell {simCtx.coin_flip(simCtx.rng)}; // buy means true, sell means false
-    float price {(simCtx.norm_dist(simCtx.rng)) / 10 + ledger.getlatestTrade(30)};
+    float price {(simCtx.norm_dist(simCtx.rng)) / 10 + ledger.getlatestTrade(10000, 1000000)};   
     price = std::max(0.0001f, price);
     int quantity {simCtx.uniform_dist(simCtx.rng) % 10 + 1};
     bool marketLimit {std::bernoulli_distribution(0.7)(simCtx.rng)};
     float afford {quantity * price};
    
-    if (buyOrSell) { // buy
+    if (buyOrSell) { // buy      
         if (afford <= investment) {
             return Ticket(
                 price, 
@@ -47,11 +46,10 @@ Ticket NoisyTrader::ticketGeneration(
 }
 
 void NoisyTrader::trade(
-    Info& info,
     uint16_t time,
     Ledger& ledger
 ) {
-    Ticket someTicket = ticketGeneration(info,time,ledger);
+    Ticket someTicket = ticketGeneration(time,ledger);
     ledger.trade(someTicket); 
     return;
 }

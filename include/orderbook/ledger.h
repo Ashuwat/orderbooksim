@@ -32,12 +32,13 @@ class Ledger {
         void buy(Ticket ticket);
         void sell(Ticket ticket);
         void hold(Ticket ticket);
+        void setStartingPrice(float startingPrice);
+
         public: 
         OHCVL returnOHCVL(int ticketEpochs, int count);
-        void setStartingPrice(float startingPrice);
         void retrieveAllData();
-        float getlatestTrade(int latency) const;
+        float getlatestTrade(int latency, int polling) const;
         void runEngine(int time);
         void trade(Ticket ticket);
-        Ledger();
+        Ledger(int startingPrice, int latency);
 };
