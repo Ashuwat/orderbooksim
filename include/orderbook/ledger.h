@@ -16,9 +16,9 @@ class Ledger {
         Ask ask;
         Bid bid; 
         Latency latencyObj;
+        float startingPrice;
         float lastTradedPrice = startingPrice;
         std::vector<TradeRecord> log = {}; 
-        float startingPrice;
 
         void removeOpposingTicket(Ticket* ticket);
         void logTrade(
