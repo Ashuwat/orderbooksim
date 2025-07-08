@@ -36,9 +36,9 @@ class Ledger {
 
         public: 
         OHCVL returnOHCVL(int ticketEpochs, int count);
-        void retrieveAllData();
+        void retrieveAllData(std::string seed);
         float getlatestTrade(int latency, int polling) const;
         void runEngine(int time);
         void trade(Ticket ticket);
-        Ledger(int startingPrice, int latency);
+        Ledger(float startingPrice, int latency);
 };

@@ -4,7 +4,10 @@ from plotly.subplots import make_subplots
 
 # made with gpt primarly (just visualizing data)
 
-df = pd.read_csv('../build/Debug/ohlcv.csv', header=None, names=['open', 'high', 'low', 'close', 'volume'])
+df = pd.read_csv(
+        '../build/Debug/ohlcv.csv', 
+        header=None, 
+        names=['open', 'high', 'low', 'close', 'volume'])
 df = df[df['volume'] > 0].reset_index(drop=True)
 df['index'] = df.index
 

@@ -2,13 +2,15 @@
 #include "../../include/orderbook/ledger.h"
 #include "../../include/traders/traders.h"
 #include "../../include/orderbook/tradeRecord.h"
+#include <cstddef>
 #include <cstdint>
 #include <fstream>
 #include <memory>
 #include <vector>
 #include <utility>
 
-Ledger::Ledger(int startingPrice, int latency) : bid(), ask(), latencyObj(), startingPrice(startingPrice) {
+Ledger::Ledger(float startingPrice, int latency) : 
+    bid(), ask(), latencyObj(), startingPrice(startingPrice) {
     latencyObj.setLatency(latency);
 };
 
@@ -27,7 +29,12 @@ void Ledger::logTrade(float price, uint16_t quantity, int timestamp) {
 OHCVL Ledger::returnOHCVL(int startIdx, int endIdx) {
     int size = static_cast<int>(log.size());
 
-    if (startIdx >= size) return OHCVL(startingPrice, startingPrice, startingPrice, startingPrice, 0);
+    if (startIdx >= size) return OHCVL(
+            startingPrice, 
+            startingPrice, 
+            startingPrice,
+            startingPrice,
+            0);
     endIdx = std::min(endIdx, size);
 
     float open = log[startIdx].price;
@@ -53,13 +60,13 @@ void Ledger::setStartingPrice(float price) {
 float Ledger::getlatestTrade(int latency = 0, int polling = 1) const {
     if (log.empty()) {return startingPrice;}
     if (log.size() <= latency) {return startingPrice;} 
-    int lastIndex = log.size() - latency - 1;
-    int actualIndex = (lastIndex / polling) * polling;
+    size_t lastIndex = (log.size()) - latency - 1;
+    int actualIndex = (static_cast<int>(lastIndex) / polling) * polling;
     return log[actualIndex].price;
 }
 
-void Ledger::retrieveAllData() {
-    std::ofstream outFile("marketData.csv");
+void Ledger::retrieveAllData(std::string seed) {
+    std::ofstream outFile("marketData" + seed + ".csv");
     if(!outFile.is_open()) {std::cout << "error opening file"; return;}
     for (TradeRecord record : log) {
         outFile << record.price << "\n"; 

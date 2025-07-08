@@ -34,7 +34,10 @@ class Ticket {
 
 
 struct BidTicketComparator {
-    bool operator()(const std::unique_ptr<Ticket>& a, const std::unique_ptr<Ticket>& b) const {
+    bool operator()(
+        const std::unique_ptr<Ticket>& a,
+        const std::unique_ptr<Ticket>& b)
+        const {
         if (a->getLimit() == b->getLimit()) {
             return a->getDatetime() > b->getDatetime(); // earlier = higher priority
         }
@@ -43,7 +46,10 @@ struct BidTicketComparator {
 };
 
 struct AskTicketComparator {
-    bool operator()(const std::unique_ptr<Ticket>& a, const std::unique_ptr<Ticket>& b) const {
+    bool operator()(
+        const std::unique_ptr<Ticket>& a,
+        const std::unique_ptr<Ticket>& b)
+        const {
         if (a->getLimit() == b->getLimit()) {
             return a->getDatetime() > b->getDatetime(); // earlier = higher priority
         }

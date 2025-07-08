@@ -17,6 +17,7 @@ int main(int argc, char*argv[]) {
         }
     }
 
+    std::cout << seed << '\n';  
 
     // parameters
     const long NUM_NOISY = 100000;
@@ -35,12 +36,12 @@ int main(int argc, char*argv[]) {
     std::array<std::unique_ptr<NoisyTrader>, NUM_NOISY> noisyTraders;
     
     for (int i = 0; i < NUM_NOISY; ++i) {
-       noisyTraders[i] = std::make_unique<NoisyTrader>(10000.0, 1000, simCtx);
+       noisyTraders[i] = std::make_unique<NoisyTrader>(10000, 1000, simCtx);
     };
 
 
     for (int i = 0; i < SIMULATION_EPOCHS; ++i) {
-        int randomVolumeGenerator = 100;
+        int randomVolumeGenerator = 10;
         for (int j = 0; j < randomVolumeGenerator; ++j) {
             bool randomChance {simCtx.uniform_dist(simCtx.rng) % 100 > 90};
             // std::cout << randomChance << '\n';
@@ -62,7 +63,7 @@ int main(int argc, char*argv[]) {
    }; 
 
 
-    ledger.retrieveAllData();
+    ledger.retrieveAllData(std::to_string(seed));
     aggLog.retrieveAllData();
     // has to have a struct to make the node list. 
     // randomly select a trader in the list.

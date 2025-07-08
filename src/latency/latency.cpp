@@ -4,7 +4,9 @@
 Latency::Latency() {latencyToTrade = {};}
 
 void Latency::addTicket(const Ticket& ticket) {
-    LatentTicket latTicket = LatentTicket(ticket, ticket.getDatetime() + latencyTrade);  
+    LatentTicket latTicket = LatentTicket(
+            ticket, 
+            ticket.getDatetime() + latencyTrade);  
     latencyToTrade.push(std::move(latTicket));
 }
 

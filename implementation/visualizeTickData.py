@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 df = pd.read_csv("../build/Debug/marketData.csv", header=None, names=["Price"])
-plt.figure(figsize=(20,10))
+plt.figure(figsize=(100, 5))
 plt.plot(df.index, df["Price"], linestyle='-', color='blue')
 
 print("Data preview:\n", df.head())
@@ -15,3 +15,4 @@ plt.grid(True)
 
 plt.tight_layout()
 plt.show()
+

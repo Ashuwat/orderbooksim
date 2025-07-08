@@ -9,7 +9,10 @@
 
 class Ask {
     private: 
-    std::priority_queue<std::unique_ptr<Ticket>, std::vector<std::unique_ptr<Ticket>>, AskTicketComparator> askList; 
+    std::priority_queue<
+        std::unique_ptr<Ticket>, 
+        std::vector<std::unique_ptr<Ticket>>,
+        AskTicketComparator> askList; 
 
     public:
     Ask();

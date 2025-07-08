@@ -13,6 +13,11 @@ void AggregationLog::retrieveAllData() {
     std::ofstream outFile("ohlcv.csv");
     if(!outFile.is_open()) {std::cout << "error opening csv"; return;}
     for (const OHCVL& record : log) {
-        outFile << record.open << "," << record.high << "," << record.low << "," << record.close << "," << record.volume << "\n";
+        outFile << 
+            record.open << "," << 
+            record.high << "," << 
+            record.low << "," << 
+            record.close << "," << 
+            record.volume << "\n";
     }
 }
