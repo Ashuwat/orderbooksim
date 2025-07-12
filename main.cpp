@@ -36,7 +36,7 @@ int main(int argc, char*argv[]) {
     std::array<std::unique_ptr<NoisyTrader>, NUM_NOISY> noisyTraders;
     
     for (int i = 0; i < NUM_NOISY; ++i) {
-       noisyTraders[i] = std::make_unique<NoisyTrader>(10000, 1000, simCtx);
+       noisyTraders[i] = std::make_unique<NoisyTrader>(10000.0f, 1000, simCtx);
     };
 
 

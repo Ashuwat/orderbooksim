@@ -14,7 +14,7 @@ Ticket NoisyTrader::ticketGeneration(
 ) {
     bool buyOrSell {simCtx.coin_flip(simCtx.rng)}; // buy means true, sell means false
     int latencyAmount = static_cast<int>(simCtx.norm_dist(simCtx.rng) * 1e4 + 1e5);
-    float price {(simCtx.norm_dist(simCtx.rng)) / 30 + ledger.getlatestTrade(latencyAmount, 1e6)};   
+    float price {(simCtx.norm_dist(simCtx.rng)) / 30 + ledger.getlatestTrade(latencyAmount, static_cast<int>(1e6))};   
     price = std::max(0.0001f, price);
     int quantity {simCtx.uniform_dist(simCtx.rng) % 10 + 1};
     bool marketLimit {std::bernoulli_distribution(0.7)(simCtx.rng)};
