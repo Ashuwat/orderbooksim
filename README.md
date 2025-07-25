@@ -6,3 +6,5 @@ There are many times that information traverses down from a small select group o
 Each trader is noisy and trades on a gaussian distribution, where the mean is the strike price, and the deviation is trader dependent (some maybe risky, some maybe safe). 
 
 Traders have various investment profiles as well. 
+
+(marketData.csv, and ohlcv.csv are results that are obtained from an example simulation)
