@@ -1,4 +1,4 @@
-## Order Book Trading Simuluation
+## Order Book Trading Simulation
 
 There are many times that information traverses down from a small select group of people to the general public. To what extent does this information impact the market performance? 
 
