@@ -1,9 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("../build/Debug/marketData.csv", header=None, names=["Price"])
+id = 1592085374
+df = pd.read_csv(f"../build/marketData{id}.csv", header=None, names=["Price"])
 plt.figure(figsize=(100, 5))
-plt.plot(df.index, df["Price"], linestyle='-', color='blue')
+start = 0
+end = 100_000
+slice = df["Price"][start:end]
+plt.plot(df.index[start:end], slice, linestyle='-', color='blue')
 
 print("Data preview:\n", df.head())
 print("Number of rows:", len(df))
@@ -15,4 +19,3 @@ plt.grid(True)
 
 plt.tight_layout()
 plt.show()
-
